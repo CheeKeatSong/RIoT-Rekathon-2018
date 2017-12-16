@@ -24,35 +24,68 @@
 <script src="/dist/js/sb-admin-2.js"></script>
 
 <!-- Flot Charts JavaScript -->
-<script src="../vendor/flot/excanvas.min.js"></script>
+<!-- <script src="../vendor/flot/excanvas.min.js"></script>
 <script src="../vendor/flot/jquery.flot.js"></script>
 <script src="../vendor/flot/jquery.flot.pie.js"></script>
 <script src="../vendor/flot/jquery.flot.resize.js"></script>
 <script src="../vendor/flot/jquery.flot.time.js"></script>
 <script src="../vendor/flot-tooltip/jquery.flot.tooltip.min.js"></script>
-<script src="../data/flot-data.js"></script>
+<script src="../data/flot-data.js"></script> -->
 
 <script type="text/javascript">
 // Create a client instance: Broker, Port, Websocket Path, Client ID
-client = new Paho.MQTT.Client("broker.mqttdashboard.com", Number(8000), "/rekathon/vegeboyz", "clientId-w2EhjzIOuO");
+client = new Paho.MQTT.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", "clientId-w2EhjzIOuO");
+
+
+// // set callback handlers
+// client.onConnectionLost = function (responseObject) {
+//     console.log("Connection Lost: "+responseObject.errorMessage);
+// }
+
+// client.onMessageArrived = function (message) {
+//   console.log("Message Arrived: "+message.payloadString);
+// }
+
+// // Called when the connection is made
+// function onConnect(){
+// 	console.log("Connected!");
+// 	client.subscribe("rekathon/vegeboyz");
+// }
+
+// // Connect the client, providing an onConnect callback
+// client.connect({
+// 	onSuccess: onConnect,
+// 	userName : "jovi",
+// 	password : "lee"
+// });
 
 // set callback handlers
-client.onConnectionLost = function (responseObject) {
-    console.log("Connection Lost: "+responseObject.errorMessage);
+client.onConnectionLost = onConnectionLost;
+client.onMessageArrived = onMessageArrived;
+
+// connect the client
+client.connect({onSuccess:onConnect});
+
+// called when the client connects
+function onConnect() {
+  // Once a connection has been made, make a subscription and send a message.
+  console.log("onConnect");
+  // client.subscribe("/World");
+  // message = new Paho.MQTT.Message("Hello");
+  // message.destinationName = "/World";
+  // client.send(message); 
 }
 
-client.onMessageArrived = function (message) {
-  console.log("Message Arrived: "+message.payloadString);
+// called when the client loses its connection
+function onConnectionLost(responseObject) {
+  if (responseObject.errorCode !== 0) {
+    console.log("onConnectionLost:"+responseObject.errorMessage);
+  }
 }
 
-// Called when the connection is made
-function onConnect(){
-	console.log(“Connected!”);
+// called when a message arrives
+function onMessageArrived(message) {
+  console.log("onMessageArrived:"+message.payloadString);
 }
-
-// Connect the client, providing an onConnect callback
-client.connect({
-	onSuccess: onConnect
-});
 
 </script>
