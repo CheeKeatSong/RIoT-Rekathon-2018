@@ -28,9 +28,21 @@ app.get('/', function(request, response) {
   response.render('pages/index')
 });
 
-app.get('/cool', function(request, response) {
-  response.send(cool());
+app.get('/area-12', function(request, response) {
+  response.render('pages/area-12')
 });
+
+app.get('/login', function(request, response) {
+  response.render('pages/login')
+});
+
+app.get('/map-view', function(request, response) {
+  response.render('pages/map-view')
+});
+
+// var highcharts = "/public/js/highcharts";
+
+// app.use('/highcharts', highcharts);
 
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
