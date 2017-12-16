@@ -77,35 +77,35 @@ function requestSoil() {
 
 $(document).ready(function() {
 
-    var hostname = "broker.mqttdashboard.com";
-    var topicMachine = "rekathon/vegeboyz";
-    var port = "183";
-    var clientid = "admin"
+//     var hostname = "broker.mqttdashboard.com";
+//     var topicMachine = "rekathon/vegeboyz";
+//     var port = "183";
+//     var clientid = "admin"
 
-//Create a new Client object with your broker's hostname, port and your own clientId
-var client = new Messaging.Client(hostname, port, clientid);
+// //Create a new Client object with your broker's hostname, port and your own clientId
+// var client = new Messaging.Client(hostname, port, clientid);
 
-var options = {
+// var options = {
 
-     //connection attempt timeout in seconds
-     timeout: 3,
+//      //connection attempt timeout in seconds
+//      timeout: 3,
 
-     //Gets Called if the connection has successfully been established
-     onSuccess: function () {
-         alert("Connected");
-     },
+//      //Gets Called if the connection has successfully been established
+//      onSuccess: function () {
+//          alert("Connected");
+//      },
 
-     //Gets Called if the connection could not be established
-     onFailure: function (message) {
-         alert("Connection failed: " + message.errorMessage);
-     }
+//      //Gets Called if the connection could not be established
+//      onFailure: function (message) {
+//          alert("Connection failed: " + message.errorMessage);
+//      }
 
- };
+//  };
 
-//Attempt to connect
-client.connect(options);
+// //Attempt to connect
+// client.connect(options);
 
-client.subscribe(topicMachine, {qos: 2});
+// client.subscribe(topicMachine, {qos: 2});
 
 chart = new Highcharts.Chart({
     chart: {
