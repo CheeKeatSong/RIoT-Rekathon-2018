@@ -34,7 +34,7 @@
 
 <script type="text/javascript">
 // Create a client instance: Broker, Port, Websocket Path, Client ID
-client = new Paho.MQTT.Client("broker.mqttdashboard.com", Number(8000), "/wss", "clientId-w2EhjzIOuO");
+client = new Paho.MQTT.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", "clientId-w2EhjzIOuO");
 
 
 // // set callback handlers
@@ -64,12 +64,21 @@ client.onConnectionLost = onConnectionLost;
 client.onMessageArrived = onMessageArrived;
 
 // connect the client
-client.connect({onSuccess:onConnect});
+client.connect({onSuccess:onConnect, useSSL: true});
 
 // called when the client connects
 function onConnect() {
-  // Once a connection has been made, make a subscription and send a message.
+  // Once a connection has been made, make a subscription and send a message.useSSL: true
   console.log("onConnect");
+
+  var subscribeOptions = {
+	qos: 0,  // QoS
+	invocationContext: {foo: true},  // Passed to success / failure callback
+	onSuccess: onSuccessCallback,
+	onFailure: onFailureCallback,
+	timeout: 10
+};
+client.subscribe("rekathon/vegeboyz", subscribeOptions);
   // client.subscribe("/World");
   // message = new Paho.MQTT.Message("Hello");
   // message.destinationName = "/World";
@@ -78,14 +87,14 @@ function onConnect() {
 
 // called when the client loses its connection
 function onConnectionLost(responseObject) {
-  if (responseObject.errorCode !== 0) {
-    console.log("onConnectionLost:"+responseObject.errorMessage);
-  }
+	if (responseObject.errorCode !== 0) {
+		console.log("onConnectionLost:"+responseObject.errorMessage);
+	}
 }
 
 // called when a message arrives
 function onMessageArrived(message) {
-  console.log("onMessageArrived:"+message.payloadString);
+	console.log("onMessageArrived:"+message.payloadString);
 }
 
 </script>
