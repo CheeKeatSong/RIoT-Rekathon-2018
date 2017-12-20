@@ -3,7 +3,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/highcharts-more.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script> 
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <script src="/js/highcharts.js"></script>
 <!-- jQuery -->
@@ -34,9 +35,9 @@
 
 <script type="text/javascript">
 // Create a client instance: Broker, Port, Websocket Path, Client ID
-client = new Paho.MQTT.Client("broker.mqttdashboard.com", Number(8000),"", "clientId-w2EhjzIOuO");
+client = new Paho.MQTT.Client("broker.mqttdashboard.com", Number(8000),"/mqtt");
 
-
+//, "clientId-w2EhjzIOuO"
 // // set callback handlers
 // client.onConnectionLost = function (responseObject) {
 //     console.log("Connection Lost: "+responseObject.errorMessage);
@@ -64,25 +65,27 @@ client.onConnectionLost = onConnectionLost;
 client.onMessageArrived = onMessageArrived;
 
 // connect the client
-client.connect({onSuccess:onConnect, useSSL: true});
+client.connect({
+	onSuccess: onConnect
+});
 
 // called when the client connects
 function onConnect() {
   // Once a connection has been made, make a subscription and send a message.useSSL: true
   console.log("onConnect");
 
-  var subscribeOptions = {
+  /*var subscribeOptions = {
 	qos: 0,  // QoS
 	invocationContext: {foo: true},  // Passed to success / failure callback
 	onSuccess: onSuccessCallback,
 	onFailure: onFailureCallback,
 	timeout: 10
-};
-client.subscribe("rekathon/vegeboyz", subscribeOptions);
-  // client.subscribe("/World");
-  // message = new Paho.MQTT.Message("Hello");
-  // message.destinationName = "/World";
-  // client.send(message); 
+};*/
+client.subscribe("rekathon/vegeboyz");
+   //client.subscribe("/World");
+   // message = new Paho.MQTT.Message("Hello");
+   // message.destinationName = "rekathon/vegeboyz";
+   // client.send(message); 
 }
 
 // called when the client loses its connection
@@ -92,9 +95,294 @@ function onConnectionLost(responseObject) {
 	}
 }
 
+var temperature = [];
+var humid = [];
+var soils = [];
+
 // called when a message arrives
 function onMessageArrived(message) {
-	console.log("onMessageArrived:"+message.payloadString);
+	d = new Date();
+	n = d.getTime();
+
+	var parts = message.payloadString.split(" ");
+	soil = parts[0];
+	temp = parts[1];
+	humidity = parts[2];
+	temperature.push(temp);
+	humid.push(humidity);
+	soils.push(soil);
+	// requestTemp();
+	// requestHumidity();
+	// requestSoil();
+} 
+
+function checkStatus(temp,humidity,soil) {
+	if (temp > 34){
+		addNotification("The temperature of the area 12 is high");
+	}
+	if (temp < 20){
+		addNotification("The temperature of the area 12 very chill");
+	}
+	if (humidity > 34){
+		addNotification("The s of the area 12 is high");
+	}
+	if (humidity < 20){
+		addNotification("The temperature of the area 12 very chill");
+	}
+	if (soil > 700){
+		addNotification("The soil moisture level of the area 12 is too low");
+	}
+	if (soil < 300){
+		addNotification("The soil moisture level of the area 12 is too high");
+	}
 }
 
-</script>
+
+function addNotification(issue) {
+	var d = new Date();
+
+	$("notifications-group").append("<a href="+"#"+" class="+"list-group-item"+">"+issue+"<span class="+"pull-right text-muted small"+"><em>"+ d.getHours() +":"+"d.getMinutes()"+":"+"d.getSeconds()"+"</em></span></a>");
+}
+
+
+
+
+var chart;
+var secondChart;
+var thirdChart;
+
+/**
+ * Request data from the server, add it to the graph and set a timeout
+ * to request again
+ */
+
+ function requestTemp() {
+
+ 	console.log(temp)
+
+ 	point = [n, temp];
+
+
+ 	var series = chart.series[0],
+            shift = series.data.length > 20; // shift if the series is
+                                                 // longer than 20
+            // add the point
+            // chart.series[0].addPoint(point, true, shift);
+            // call it again after one second
+            // setTimeout(requestTemp, 1000);
+
+        }
+
+        function requestHumidity() {
+        	console.log(humidity)
+
+        	point = [n, humidity];
+
+        	var series = chart.series[0],
+                shift = series.data.length > 20; // shift if the series is
+                                                 // longer than 20
+            // add the point
+            // secondChart.series[0].addPoint(point, true, shift);
+            // call it again after one second
+            // setTimeout(requestHumidity, 1000);
+        }
+
+        function requestSoil() {
+        	console.log(soil)
+
+        	point = [n, soil];
+
+        	var series = chart.series[0],
+                shift = series.data.length > 20; // shift if the series is
+                                                 // longer than 20
+            // add the point
+            // thirdChart.series[0].addPoint(point, true, shift);
+            // call it again after one second
+            // setTimeout(requestSoil, 1000);
+        }
+
+        function rand() {
+        	return Math.random();
+        }
+
+        $(document).ready(function() {
+
+
+        	var temp = 0, humidity = 0, soil = 0;
+
+        	Plotly.plot('data-container', [{
+        		y: [0]
+        	}]);
+
+        	var cnt1 = 0;
+
+        	var interval = setInterval(function() {
+
+        			cnt1++;
+        			if(cnt1 > 5) {
+        				Plotly.relayout('data-container',
+        				{
+        					'xaxis.range': [cnt1 - 5, cnt1]
+        				})
+        			}
+
+        			Plotly.extendTraces('data-container',
+        			{
+        				y: [temperature]
+        			}, [0])
+        		}, 1000);
+             
+
+             //CHart B
+             Plotly.plot('chartB', [{
+        		y: [0]
+        	}]);
+
+        	var cnt2 = 0;
+
+        	var interval = setInterval(function() {
+
+        			cnt2++;
+        			if(cnt2 > 5) {
+        				Plotly.relayout('chartB',
+        				{
+        					'xaxis.range': [cnt2 - 5, cnt2]
+        				})
+        			}
+
+        			Plotly.extendTraces('chartB',
+        			{
+        				y: [humid]
+        			}, [0])
+        		}, 1000);
+
+
+        	//Chart C
+        	Plotly.plot('chartC', [{
+        		y: [0]
+        	}]);
+
+        	var cnt = 0;
+
+        	var interval = setInterval(function() {
+
+        			cnt++;
+        			if(cnt > 5) {
+        				Plotly.relayout('chartC',
+        				{
+        					'xaxis.range': [cnt - 5, cnt]
+        				})
+        			}
+
+        			Plotly.extendTraces('chartC',
+        			{
+        				y: [soils]
+        			}, [0])
+        		}, 1000);
+
+        });
+
+        // 	chart = new Highcharts.Chart({
+        // 		chart: {
+        // 			renderTo: 'data-container',
+        // 			defaultSeriesType: 'spline',
+        // 			events: {
+
+        // 			}
+        // 		},
+        // 		title: {
+        // 			text: 'Temperature Data'
+        // 		},
+        // 		xAxis: {
+        // 			type: 'datetime',
+        // 			tickPixelInterval: 150,
+        // 			maxZoom: 20 * 1000
+        // 		},
+        // 		yAxis: {
+        // 			minPadding: 0.2,
+        // 			maxPadding: 0.2,
+        // 			title: {
+        // 				text: 'Value',
+        // 				margin: 80
+        // 			}
+        // 		},
+        // 		series: [{
+        // 			name: 'Temperature',
+        // 			data: []
+        // 		}]
+        // 	});
+
+
+        // 	Highcharts.setOptions({
+        // 		global: {
+        // 			useUTC: false
+        // 		}
+        // 	});
+
+        // 	secondChart = Highcharts.chart('chartB', {
+        // 		chart: {
+        // 			renderTo: 'data-container',
+        // 			defaultSeriesType: 'spline',
+        // 			marginRight: 10,
+        //             events: {
+
+        //             }
+        // 		},
+        // 		title: {
+        // 			text: 'Humidity data'
+        // 		},
+        // 		xAxis: {
+        // 			type: 'datetime',
+        // 			tickPixelInterval: 150,
+        // 			maxZoom: 20 * 1000
+        // 		},
+        // 		yAxis: {
+        // 			minPadding: 0.2,
+        // 			maxPadding: 0.2,
+        // 			title: {
+        // 				text: 'Value',
+        // 				margin: 80
+        // 			}
+        // 		},
+        // 		series: [{
+        // 			name: 'Humidity',
+        // 			data: []
+        // 		}]
+        // 	});
+
+        // 	thirdChart = Highcharts.chart('chartC', {
+        // 		chart: {
+        // 			renderTo: 'data-container',
+        // 			defaultSeriesType: 'spline',
+        // 			events: {
+        // 			}
+        // 		},
+        // 		title: {
+        // 			text: 'Soil Moisture Data'
+        // 		},
+        // 		xAxis: {
+        // 			type: 'datetime',
+        // 			tickPixelInterval: 150,
+        // 			maxZoom: 20 * 1000
+        // 		},
+        // 		yAxis: {
+        // 			minPadding: 0.2,
+        // 			maxPadding: 0.2,
+        // 			title: {
+        // 				text: 'Value',
+        // 				margin: 80
+        // 			}
+        // 		},
+        // 		series: [{
+        // 			name: 'Soil Moisture',
+        // 			data: []
+        // 		}]
+        // 	});
+        // });
+
+
+
+
+
+
+    </script>
