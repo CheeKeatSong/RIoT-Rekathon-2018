@@ -13,7 +13,7 @@ Rubber plantation is one of the Malaysia's biggest commodity and revenues. Seein
 
 ## Interface
 
-
+<img src="https://github.com/CheeKeatSong/RIoT-Rekathon-2018/blob/master/screen/dashboard.png" width="800" height="450"> 
 
 ## Tools & Library
 
