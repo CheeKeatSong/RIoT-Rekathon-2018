@@ -23,6 +23,9 @@ Rubber plantation is one of the Malaysia's biggest commodity and revenues. Seein
 
 ## Contributors
 
+1. Edwin Cheong
+2. Ken Low
+3. Jovi Lee
 
 ## Note
 
